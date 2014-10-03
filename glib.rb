@@ -18,7 +18,7 @@ class Glib < Formula
 
   depends_on 'pkg-config' => :build
   depends_on 'gettext' if OS.mac?
-  depends_on 'libffi'
+  depends_on 'csdms/dupes/libffi'
 
   fails_with :llvm do
     build 2334
