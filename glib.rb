@@ -17,7 +17,7 @@ class Glib < Formula
   option 'with-static', 'Build glib with a static archive.'
 
   depends_on 'pkg-config' => :build
-  depends_on 'gettext'
+  depends_on 'gettext' if OS.mac?
   depends_on 'libffi'
 
   fails_with :llvm do
@@ -55,16 +55,6 @@ class Glib < Formula
   def install
     ENV.universal_binary if build.universal?
 
-    if OS.linux?
-      ENV.append "LDFLAGS",
-        "-L#{Formula["gettext"].lib} -L#{Formula["libffi"].prefix}/lib64"
-      ENV.append "CPPFLAGS",
-        "-I#{Formula["gettext"].include} -I#{Formula["libffi"].include}"
-
-      ENV.prepend_path 'LD_LIBRARY_PATH', Formula["gettext"].lib
-      ENV.prepend_path 'LD_LIBRARY_PATH', Formula["libffi"].prefix + '/lib64'
-    end
-
     inreplace %w[gio/gdbusprivate.c gio/xdgmime/xdgmime.c glib/gutils.c],
       "@@HOMEBREW_PREFIX@@", HOMEBREW_PREFIX
 
@@ -96,12 +86,14 @@ class Glib < Formula
 
     # `pkg-config --libs glib-2.0` includes -lintl, and gettext itself does not
     # have a pkgconfig file, so we add gettext lib and include paths here.
-    gettext = Formula["gettext"].opt_prefix
-    inreplace lib+'pkgconfig/glib-2.0.pc' do |s|
-      s.gsub! 'Libs: -L${libdir} -lglib-2.0',
-              "Libs: -L${libdir} -lglib-2.0 -L#{gettext}/lib -lintl"
-      s.gsub! 'Cflags: -I${includedir}/glib-2.0 -I${libdir}/glib-2.0/include',
-              "Cflags: -I${includedir}/glib-2.0 -I${libdir}/glib-2.0/include -I#{gettext}/include"
+    if OS.mac?
+      gettext = Formula["gettext"].opt_prefix
+      inreplace lib+'pkgconfig/glib-2.0.pc' do |s|
+        s.gsub! 'Libs: -L${libdir} -lglib-2.0 -lintl',
+                "Libs: -L${libdir} -lglib-2.0 -L#{gettext}/lib -lintl"
+        s.gsub! 'Cflags: -I${includedir}/glib-2.0 -I${libdir}/glib-2.0/include',
+                "Cflags: -I${includedir}/glib-2.0 -I${libdir}/glib-2.0/include -I#{gettext}/include"
+      end
     end
 
     (share+'gtk-doc').rmtree
