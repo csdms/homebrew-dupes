@@ -2,9 +2,9 @@ require 'formula'
 
 class Netcdf < Formula
   homepage 'http://www.unidata.ucar.edu/software/netcdf'
-  url 'ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4.3.2.tar.gz'
-  mirror 'http://www.gfd-dennou.org/library/netcdf/unidata-mirror/netcdf-4.3.2.tar.gz'
-  sha1 '6e1bacab02e5220954fe0328d710ebb71c071d19'
+  url 'ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4.3.3.1.tar.gz'
+  mirror 'http://www.gfd-dennou.org/library/netcdf/unidata-mirror/netcdf-4.3.3.1.tar.gz'
+  sha256 'bdde3d8b0e48eed2948ead65f82c5cfb7590313bc32c4cf6c6546e4cea47ba19'
 
   depends_on :fortran if build.include? 'enable-fortran'
   depends_on 'hdf5'
